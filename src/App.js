@@ -3,16 +3,17 @@ import './App.css';
 import BurnsMintsSummary from './components/BurnsMintsSummary';
 import RemainingTokensTracker from './components/RemainingTokensTracker';
 import RealTimeTokenSupplyTracker from './components/RealTimeTokenSupplyTracker';
-import NFTDataFetcher from './components/NFTDataFetcher';
+import NFTSupplyMonitor from './components/NFTSupplyMonitor';
+import USDTDataTracker from './components/USDTDataTracker'
 
 const APIURL = "https://api.studio.thegraph.com/query/89309/etherscan/version/latest";
 
 const query = `
   query Subgraphs($lastId: ID) {
-    burns(first: 1000, where: { id_gt: $lastId }, orderBy: id, orderDirection: asc) {
+    burns(first: null, where: { id_gt: $lastId }, orderBy: id, orderDirection: asc) {
       id
     }
-    mints(first: 1000, where: { id_gt: $lastId }, orderBy: id, orderDirection: asc) {
+    mints(first: null, where: { id_gt: $lastId }, orderBy: id, orderDirection: asc) {
       id
     }
   }
@@ -98,7 +99,8 @@ function App() {
       {error && <p className="error">{error}</p>}
       <RemainingTokensTracker burnCount={burnCount} mintCount={mintCount} />
       <RealTimeTokenSupplyTracker/>
-      <NFTDataFetcher/>
+      <NFTSupplyMonitor/>
+      <USDTDataTracker/>
     </div>
   );
 }

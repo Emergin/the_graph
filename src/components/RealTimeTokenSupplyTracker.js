@@ -72,11 +72,28 @@ const RealTimeTokenSupplyTracker = () => {
     return (parseFloat(tokens) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 0 }) + " GRT";
   };
 
+  const calculatePercentages = (data) => {
+    const totalSupply = parseFloat(data.totalSupply);
+    const totalStaked = parseFloat(data.totalTokensStaked);
+    const totalSignalled = parseFloat(data.totalTokensSignalled);
+    const totalDelegated = parseFloat(data.totalDelegatedTokens);
+
+    return {
+      staked: totalSupply > 0 ? ((totalStaked / totalSupply) * 100).toFixed(2) : 0,
+      signalled: totalSupply > 0 ? ((totalSignalled / totalSupply) * 100).toFixed(2) : 0,
+      delegated: totalSupply > 0 ? ((totalDelegated / totalSupply) * 100).toFixed(2) : 0,
+      circulating: totalSupply > 0 ? (((totalSupply - (totalStaked + totalSignalled + totalDelegated)) / totalSupply) * 100).toFixed(2) : 0,
+    };
+  };
+
+  const percentages = supplyData ? calculatePercentages(supplyData) : {};
+
   if (loading && !supplyData) return <p>Loading initial supply data...</p>;
   if (error && !supplyData) return <p>Error: {error}</p>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <h1 className="text-2xl font-bold mb-4">Graph Arbitrum Network Token Supply</h1>
       <Card className="border-2 border-blue-600 bg-blue-50 p-4">
         <CardHeader className="border-b border-green-600 pb-2">
           <CardTitle className="text-blue-800">GRT Supply on Arbitrum</CardTitle>
@@ -108,16 +125,16 @@ const RealTimeTokenSupplyTracker = () => {
           {supplyData && (
             <div className="space-y-2">
               <div className="bg-blue-200 p-2 border border-blue-600">
-                <p>Staked: {((parseFloat(supplyData.totalTokensStaked) / parseFloat(supplyData.totalSupply)) * 100).toFixed(2)}%</p>
+                <p>Staked: {percentages.staked}%</p>
               </div>
               <div className="bg-green-200 p-2 border border-green-600">
-                <p>Signalled: {((parseFloat(supplyData.totalTokensSignalled) / parseFloat(supplyData.totalSupply)) * 100).toFixed(2)}%</p>
+                <p>Signalled: {percentages.signalled}%</p>
               </div>
               <div className="bg-blue-200 p-2 border border-blue-600">
-                <p>Delegated: {((parseFloat(supplyData.totalDelegatedTokens) / parseFloat(supplyData.totalSupply)) * 100).toFixed(2)}%</p>
+                <p>Delegated: {percentages.delegated}%</p>
               </div>
               <div className="bg-green-200 p-2 border border-green-600">
-                <p>Circulating: {(((parseFloat(supplyData.totalSupply) - parseFloat(supplyData.totalTokensStaked) - parseFloat(supplyData.totalTokensSignalled)) / parseFloat(supplyData.totalSupply)) * 100).toFixed(2)}%</p>
+                <p>Circulating: {percentages.circulating}%</p>
               </div>
             </div>
           )}
@@ -205,6 +222,3 @@ const RealTimeTokenSupplyTracker = () => {
 };
 
 export default RealTimeTokenSupplyTracker;
-
-
-
